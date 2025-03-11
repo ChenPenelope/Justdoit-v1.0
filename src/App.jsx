@@ -6,10 +6,11 @@ import RegistrationScreen from './components/RegistrationScreen';
 import BettingScreen from './components/BettingScreen';
 
 function App() {
+  const base = import.meta.env.BASE_URL;
   const [currentUser, setCurrentUser] = useState(null);
 
   return (
-    <Router>
+    <Router basename={base}>
       <Routes>
         <Route path='/' element={<WelcomeScreen />} />
         <Route path='/register' element={<RegistrationScreen setCurrentUser={setCurrentUser} />} />
