@@ -11,7 +11,8 @@
     "lint": "eslint --fix --ext=js,jsx src/",
     "format:check": "prettier . --check --ignore-unknown",
     "format": "prettier . --write --ignore-unknown",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "deploy": "vite build && gh-pages -d dist"
   },
   "husky": {
     "hooks": {
@@ -26,6 +27,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "gh-pages": "^6.3.0",
     "jquery": "^3.7.1",
     "react": "^19.0.0",
     "react-bootstrap": "^2.10.9",
@@ -48,5 +50,6 @@
     "lint-staged": "^15.4.3",
     "prettier": "^3.5.3",
     "vite": "^6.2.0"
-  }
+  },
+  "homepage": "https://chenpenelope.github.io/Justdoit-v1.0"
 }
