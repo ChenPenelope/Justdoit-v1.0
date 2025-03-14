@@ -1,16 +1,13 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import React from 'react';
-import './RegistrationScreen.css';
+import { useNavigate } from 'react-router-dom';
+
 import db from '../DB';
+import './RegistrationScreen.css';
 
-RegistrationScreen.propTypes = {
-  // onRegister: PropTypes.func.isRequired,
-  setCurrentUser: PropTypes.func.isRequired,
-};
-
-function RegistrationScreen({ setCurrentUser }) {
+const RegistrationScreen = ({ setCurrentUser }) => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
 
@@ -21,6 +18,8 @@ function RegistrationScreen({ setCurrentUser }) {
     if (username) {
       setCurrentUser(username);
       db.saveUser(username);
+      // save the username in the cookie
+      Cookies.set('username', username, { expires: 1 });
     }
     navigate('/bet');
   };
@@ -43,6 +42,10 @@ function RegistrationScreen({ setCurrentUser }) {
       </form>
     </div>
   );
-}
+};
+
+RegistrationScreen.propTypes = {
+  setCurrentUser: PropTypes.func.isRequired,
+};
 
 export default RegistrationScreen;

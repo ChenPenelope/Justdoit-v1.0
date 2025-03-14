@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
-import './BettingScreen.css';
+import React, { useEffect, useState } from 'react';
+import { Button, Modal } from 'react-bootstrap';
+
 import db from '../DB';
 import BetHistory from './BetHistory';
 import BettingOption from './BettingOption';
+import './BettingScreen.css';
 
 BettingScreen.propTypes = {
   currentUser: PropTypes.string.isRequired,
@@ -16,6 +18,7 @@ function BettingScreen({ currentUser }) {
   const [showModal, setShowModal] = useState(false);
   const [inputValues, setInputValues] = useState({});
   const [users, setUsers] = useState([]);
+  currentUser = currentUser || Cookies.get('username');
 
   useEffect(() => {
     // Fetch users from the database and set the state

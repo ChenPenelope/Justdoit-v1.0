@@ -3,10 +3,10 @@
     grid-template-columns: 1fr;
   }
 
-  .header {
+  /* .header {
     flex-direction: column;
     align-items: flex-start;
-  }
+  } */
 
   .user-info {
     margin-bottom: 1rem;
