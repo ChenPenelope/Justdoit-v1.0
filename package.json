@@ -1,57 +1,22 @@
 {
-  "name": "justdoit-v1-0",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint:check": "eslint --ext=js,jsx src/",
-    "lint": "eslint --fix --ext=js,jsx src/",
-    "format:check": "prettier . --check --ignore-unknown",
-    "format": "prettier . --write --ignore-unknown",
-    "prepare": "husky install",
-    "deploy": "vite build && gh-pages -d dist"
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+  "scripts": {
+    "prepare": "husky install",
+    "lint:echeck": "npm run lint:check --prefix client && npm run lint:check --prefix server",
+    "lint": "npm run lint --prefix client && npm run lint --prefix server",
+    "format": "npm run format --prefix client && npm run format --prefix server"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --write",
-      "eslint --fix"
+    "client/**/*.{js,jsx,ts,tsx}": [
+      "npm run lint --prefix client",
+      "npm run format --prefix client"
+    ],
+    "server/**/*.{js,jsx,ts,tsx}": [
+      "npm run lint --prefix server",
+      "npm run format --prefix server"
     ]
-  },
-  "dependencies": {
-    "bootstrap": "^5.3.3",
-    "gh-pages": "^6.3.0",
-    "jquery": "^3.7.1",
-    "js-cookie": "^3.0.5",
-    "react": "^19.0.0",
-    "react-bootstrap": "^2.10.9",
-    "react-dom": "^19.0.0",
-    "react-router-dom": "^7.3.0"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.22.0",
-    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/react": "^19.0.10",
-    "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^4.3.4",
-    "eslint": "^9.22.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.3",
-    "eslint-plugin-react": "^7.37.4",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.19",
-    "globals": "^16.0.0",
-    "husky": "^8.0.0",
-    "lint-staged": "^15.4.3",
-    "prettier": "^3.5.3",
-    "vite": "^6.2.0"
-  },
-  "homepage": "https://chenpenelope.github.io/Justdoit-v1.0"
+  }
 }
