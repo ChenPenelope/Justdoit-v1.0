@@ -23,7 +23,11 @@ const AdminLogin = ({ onLogin }) => {
     <div className='login-wrapper'>
       <div className='login-form-container'>
         <h2 className='login-title'>Admin Login</h2>
-        {error && <Alert variant='danger'>{error}</Alert>}
+        {error && (
+          <Alert variant='danger' dismissible onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
         <Form onSubmit={handleSubmit}>
           <Form.Group className='mb-3' controlId='formBasicPassword'>
             <Form.Label>Password</Form.Label>

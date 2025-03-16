@@ -31,7 +31,7 @@ function App() {
   };
 
   // remove the cookie when testing the login
-  // Cookies.remove('isAdmin');
+  Cookies.remove('isAdmin');
 
   return (
     <Router basename={base}>

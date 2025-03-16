@@ -134,7 +134,7 @@
   cursor: pointer;
 }
 
-.user-list {
+/* .user-list {
   max-height: 300px;
   overflow-y: auto;
   margin-bottom: 1rem;
@@ -152,4 +152,4 @@
 
 .user-item:last-child {
   border-bottom: none;
-}
+} */

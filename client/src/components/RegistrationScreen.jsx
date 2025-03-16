@@ -2,26 +2,32 @@ import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import React from 'react';
+import { Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-import db from '../DB';
+import { createUser } from '../api/userApi';
 import './RegistrationScreen.css';
 
 const RegistrationScreen = ({ setCurrentUser }) => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const username = name.trim();
 
     if (username) {
-      setCurrentUser(username);
-      db.saveUser(username);
-      // save the username in the cookie
-      Cookies.set('username', username, { expires: 1 });
+      try {
+        await createUser(username);
+        setCurrentUser(username);
+        Cookies.set('username', username, { expires: 1 });
+        navigate('/bet');
+      } catch (err) {
+        console.log(err);
+        setError(err);
+      }
     }
-    navigate('/bet');
   };
 
   return (
@@ -36,6 +42,11 @@ const RegistrationScreen = ({ setCurrentUser }) => {
           onChange={(e) => setName(e.target.value)}
           required
         />
+        {error && (
+          <Alert variant='danger' id='name-error' dismissible onClose={() => setError('')}>
+            {error}
+          </Alert>
+        )}
         <button type='submit' id='register-button'>
           送出
         </button>
