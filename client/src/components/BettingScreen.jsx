@@ -1,9 +1,9 @@
 import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
 
 import db from '../DB';
+import { getUserByName, updateUserChips } from '../api/userApi';
 import BetHistory from './BetHistory';
 import BettingOption from './BettingOption';
 import './BettingScreen.css';
@@ -15,17 +15,19 @@ BettingScreen.propTypes = {
 function BettingScreen({ currentUser }) {
   const [chipCount, setChipCount] = useState(1000);
   const [history, setHistory] = useState([]);
-  const [showModal, setShowModal] = useState(false);
   const [inputValues, setInputValues] = useState({});
-  const [users, setUsers] = useState([]);
+  const [user, setUser] = useState(null);
   currentUser = currentUser || Cookies.get('username');
 
   useEffect(() => {
-    // Fetch users from the database and set the state
-    const allUsers = db.getAllUsers();
-    setUsers(Object.entries(allUsers)); // Convert object to array of [key, value] pairs
-    setChipCount(allUsers[currentUser]?.chips || 1000);
-  }, [db.getAllUsers]);
+    const fetchUser = async () => {
+      const user = await getUserByName(currentUser);
+      setUser(user);
+      setHistory(user?.history || []);
+      setChipCount(user?.chips || 1000);
+    };
+    fetchUser();
+  }, [currentUser]);
 
   const handleBet = (option, multiplier, index) => {
     const amount = parseInt(inputValues[index]);
@@ -34,22 +36,21 @@ function BettingScreen({ currentUser }) {
       return;
     }
 
-    const user = db.users[currentUser];
     if (!user || user.chips < amount) {
       alert('籌碼不足!');
       return;
     }
 
-    db.updateChips(currentUser, -amount);
-    setChipCount((prevChipCount) => prevChipCount - amount);
-
+    var newChips = chipCount - amount;
     // Determine win or lose (50% chance)
     const isWin = Math.random() >= 0.5;
     if (isWin) {
       const winAmount = Math.floor(amount * multiplier);
-      db.updateChips(currentUser, winAmount);
-      setChipCount((prevChipCount) => prevChipCount + winAmount);
+      newChips += winAmount;
     }
+
+    setChipCount(newChips);
+    updateUserChips(user.id, newChips);
 
     // Update history
     db.addBetHistory(currentUser, option, amount, multiplier, isWin);
@@ -61,28 +62,6 @@ function BettingScreen({ currentUser }) {
       ...prevValues,
       [index]: '',
     }));
-  };
-
-  const handleRestAll = () => {
-    if (confirm('確定要重置所有用戶數據嗎?')) {
-      db.resetAllUsers();
-      // updateUserList();
-      alert('所有用戶數據已重置');
-      setShowModal(false);
-    }
-  };
-
-  const exportData = () => {
-    const data = JSON.stringify(db.getAllUsers(), null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'betting_data.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setShowModal(false);
   };
 
   const handleInputChange = (index, value) => {
@@ -106,11 +85,6 @@ function BettingScreen({ currentUser }) {
           </div>
         </div>
         <div id='game-status'>遊戲進行中...</div>
-
-        {/* admin control button */}
-        <div id='admin-control' onClick={() => setShowModal(true)}>
-          管理員
-        </div>
       </div>
 
       {/* bettingOptions */}
@@ -129,30 +103,6 @@ function BettingScreen({ currentUser }) {
 
       {/* bet history */}
       <BetHistory history={history} />
-
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>管理員面板</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className='user-list' id='user-list'>
-            {users.map(([username, data]) => (
-              <div key={username} className='user-item'>
-                <span className='username'>{username}</span>
-                <span>籌碼: {data.chips}</span>
-              </div>
-            ))}
-          </div>
-        </Modal.Body>
-        <Modal.Footer className='admin-controls'>
-          <Button id='close-admin-button' onClick={() => handleRestAll()}>
-            重置所有用戶
-          </Button>
-          <Button id='export-data-button' onClick={() => exportData()}>
-            匯出數據
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
