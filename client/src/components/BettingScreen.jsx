@@ -42,13 +42,6 @@ function BettingScreen({ currentUser }) {
     }
 
     var newChips = chipCount - amount;
-    // Determine win or lose (50% chance)
-    const isWin = Math.random() >= 0.5;
-    if (isWin) {
-      const winAmount = Math.floor(amount * multiplier);
-      newChips += winAmount;
-    }
-
     setChipCount(newChips);
     updateUserChips(user.id, newChips);
 
