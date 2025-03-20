@@ -35,25 +35,6 @@ db.connect((err) => {
   }
   console.log('User table created or already exists.');
   });
-
-  const createBetHistoryQuery = `
-  CREATE TABLE IF NOT EXISTS bet_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    pickedOption TINYINT(3),
-    amount INT,
-    multiplier FLOAT,
-    isWin BOOLEAN,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-  )`;
-  db.query(createBetHistoryQuery, (err, result) => {
-    if (err) {
-      console.error('Failed to create bet_history table:', err.stack);
-      return;
-    }
-    console.log('Bet history table created or already exists.');
-  });
 });
 
 module.exports = db;

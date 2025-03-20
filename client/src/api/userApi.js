@@ -71,3 +71,13 @@ export const deleteAllUsers = async () => {
     throw error.response.data;
   }
 };
+
+// Check admin password
+export const checkAdminPassword = async (password) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/admin`, { password });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};

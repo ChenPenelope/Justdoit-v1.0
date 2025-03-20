@@ -112,6 +112,15 @@ router.delete('/:id', (req, res) => {
   });
 });
 
+// Route to check admins password
+router.post('/admin', (req, res) => {
+  const { password } = req.body;
+  if(password === 'admin')
+    res.send(true);
+  else
+    res.send(false);
+});
+
 
 
 

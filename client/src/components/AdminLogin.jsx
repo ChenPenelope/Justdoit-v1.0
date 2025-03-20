@@ -4,8 +4,6 @@ import React from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-import './AdminLogin.css';
-
 const AdminLogin = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -20,25 +18,25 @@ const AdminLogin = ({ onLogin }) => {
   };
 
   return (
-    <div className='login-wrapper'>
-      <div className='login-form-container'>
-        <h2 className='login-title'>Admin Login</h2>
-        {error && (
-          <Alert variant='danger' dismissible onClose={() => setError(null)}>
-            {error}
-          </Alert>
-        )}
-        <Form onSubmit={handleSubmit}>
+    <div className='screen'>
+      <div className='bg-light p-4 rounded w-100 shadow' style={{ maxWidth: '400px' }}>
+        <h2 className='mb-4 text-center'>Admin Login</h2>
+        <Form onSubmit={handleSubmit} className='px-3 pt-2'>
           <Form.Group className='mb-3' controlId='formBasicPassword'>
-            <Form.Label>Password</Form.Label>
             <Form.Control
               type='password'
               placeholder='Enter the admin password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className='mb-3'
             />
           </Form.Group>
-          <Button variant='primary' type='submit' className='login-button'>
+          {error && (
+            <Alert variant='danger' dismissible onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
+          <Button variant='primary' type='submit' className='w-100'>
             Login
           </Button>
         </Form>

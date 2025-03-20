@@ -13,7 +13,7 @@ function BettingOption({ index, option, inputValues, handleInputChange, handleBe
   return (
     <div className='betting-option' key={index}>
       <div className='option-header'>選項 {option}</div>
-      
+      <p>獎金倍率: {index + 1.5}x</p>
       <div className='bet-controls'>
         <input
           type='number'
@@ -23,7 +23,8 @@ function BettingOption({ index, option, inputValues, handleInputChange, handleBe
           placeholder='投注籌碼'
           onChange={(e) => handleInputChange(index, e.target.value)}
         />
-        <button className='place-bet-button' onClick={() => handleBet(option, index, index)}>
+        {/* <button className='place-bet-button' onClick={() => handleBet(option, index, index)}> */}
+        <button className='place-bet-button' onClick={() => handleBet(option, index + 1.5, index)}>
           投注
         </button>
       </div>

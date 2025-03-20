@@ -2,7 +2,6 @@ import Cookies from 'js-cookie';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
-import db from '../DB';
 import { getUserByName, updateUserChips } from '../api/userApi';
 import BetHistory from './BetHistory';
 import BettingOption from './BettingOption';
@@ -42,11 +41,17 @@ function BettingScreen({ currentUser }) {
     }
 
     var newChips = chipCount - amount;
+    // Determine win or lose (50% chance)
+    const isWin = Math.random() >= 0.5;
+    if (isWin) {
+      const winAmount = Math.floor(amount * multiplier);
+      newChips += winAmount;
+    }
+
     setChipCount(newChips);
     updateUserChips(user.id, newChips);
 
     // Update history
-    db.addBetHistory(currentUser, option, amount, multiplier, isWin);
     const newHistory = [...history, { currentUser, option, amount, multiplier, isWin }];
     setHistory(newHistory);
 
@@ -70,7 +75,7 @@ function BettingScreen({ currentUser }) {
     <div id='betting-screen' className='container'>
       <div className='header'>
         <div className='user-info'>
-          <div className='username' id='display-username'>
+          <div className='username purple-text' id='display-username'>
             {currentUser}
           </div>
           <div className='chip-counter'>

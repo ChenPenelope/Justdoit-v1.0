@@ -58,8 +58,8 @@ const ListScreen = () => {
 
   return (
     <Container style={{ height: '80%' }}>
-      <h1 className='mb-3 mt-3'>管理員面板</h1>
-      <Table striped bordered hover className='mb-4'>
+      <h1 className='mb-3 mt-3 purple-header-text'>管理員面板</h1>
+      <Table bordered className='my-4 text-white'>
         <thead>
           <tr>
             <th>#</th>

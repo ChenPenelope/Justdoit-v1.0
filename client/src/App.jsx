@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import './App.css';
+import { checkAdminPassword } from './api/userApi';
 import AdminLogin from './components/AdminLogin';
 import BettingScreen from './components/BettingScreen';
 import ListScreen from './components/ListScreen';
@@ -21,8 +22,9 @@ function App() {
     }
   }, []);
 
-  const handleAdminLogin = (password) => {
-    if (password === 'admin') {
+  const handleAdminLogin = async (password) => {
+    const success = await checkAdminPassword(password);
+    if (success) {
       Cookies.set('isAdmin', true, { expires: 1 });
       setIsAdmin(true);
       return true;
