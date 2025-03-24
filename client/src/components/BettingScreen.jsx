@@ -35,7 +35,7 @@ function BettingScreen({ currentUser }) {
       return;
     }
 
-    if (!user || user.chips < amount) {
+    if (chipCount < amount) {
       alert('籌碼不足!');
       return;
     }

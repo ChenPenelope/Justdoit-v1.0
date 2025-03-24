@@ -55,5 +55,8 @@
     "prettier": "^3.5.3",
     "vite": "^6.2.0"
   },
-  "homepage": "https://chenpenelope.github.io/Justdoit-v1.0"
+  "homepage": "https://chenpenelope.github.io/Justdoit-v1.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }
