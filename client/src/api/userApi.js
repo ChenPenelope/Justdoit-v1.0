@@ -6,7 +6,8 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const createUser = async (name) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/users`, { name });
-    return response.data;
+    console.log('create user', response.data.user);
+    return response.data.user;
   } catch (error) {
     throw error.response.data;
   }
@@ -18,7 +19,8 @@ export const getAllUsers = async () => {
     const response = await axios.get(`${API_BASE_URL}/users`);
     return response.data;
   } catch (error) {
-    throw error.response.data;
+    console.log(error.response);
+    throw error.response;
   }
 };
 
@@ -26,7 +28,7 @@ export const getAllUsers = async () => {
 export const getUserByName = async (name) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/users/name/${name}`);
-    return response.data;
+    return response.data.user;
   } catch (error) {
     throw error.response.data;
   }
@@ -36,16 +38,6 @@ export const getUserByName = async (name) => {
 export const updateUserChips = async (id, chips) => {
   try {
     const response = await axios.put(`${API_BASE_URL}/users/${id}/chips`, { chips });
-    return response.data;
-  } catch (error) {
-    throw error.response.data;
-  }
-};
-
-// Update bet history of a user
-export const updateUserHistory = async (id, historyIds) => {
-  try {
-    const response = await axios.put(`${API_BASE_URL}/users/${id}/history`, { historyIds });
     return response.data;
   } catch (error) {
     throw error.response.data;

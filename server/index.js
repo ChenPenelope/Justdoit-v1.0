@@ -2,8 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+
 const userRoutes = require('./routes/userRoutes'); // Import the user routes
-const db = require('./db'); // Import the database connection
 
 dotenv.config();
 const app = express();
@@ -16,12 +16,13 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 
 // Serve frontend static files
-app.use('/Justdoit-v1.0', express.static(path.join(__dirname, '../client/dist'))); // Adjust path if using React
+app.use('/Justdoit-v1.0', express.static(path.join(__dirname, './dist'))); // Adjust path if using React
 
 // Catch-all to serve `index.html` for non-API routes
 app.get('/Justdoit-v1.0/*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/index.html'));
 });
+
 
 // Start the server
 app.listen(port, () => {

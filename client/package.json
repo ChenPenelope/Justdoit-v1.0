@@ -12,7 +12,8 @@
     "format:check": "prettier . --check --ignore-unknown",
     "format": "prettier . --write --ignore-unknown",
     "prepare": "cd .. && npx husky client/.husky",
-    "deploy": "vite build && gh-pages -d dist"
+    "deploy": "vite build && gh-pages -d dist",
+    "copy:dist": "cp -r ./dist ../server"
   },
   "husky": {
     "hooks": {

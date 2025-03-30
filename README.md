@@ -1,162 +1,117 @@
 # Justdoit-v1.0
 
-This project is a React application built with Vite. It includes a basic setup for a betting game with user registration, betting options, and an admin panel.
+Justdoit-v1.0 is a React application built with Vite. It features a betting game with user registration, betting options, and an admin panel. The project includes a backend powered by Node.js and Express, with a MySQL database for data storage.
+
+---
 
 ## Table of Contents
 
 - [Justdoit-v1.0](#justdoit-v10)
   - [Table of Contents](#table-of-contents)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Setting Up the Backend (Server)](#setting-up-the-backend-server)
-    - [Setting Up the Frontend (Client)](#setting-up-the-frontend-client)
-    - [Build for Production](#build-for-production)
-    - [Linting and Formatting](#linting-and-formatting)
-    - [Adding New Packages](#adding-new-packages)
+  - [Getting Started with Docker](#getting-started-with-docker)
+  - [Using a Local Database](#using-a-local-database)
+  - [Linting and Formatting](#linting-and-formatting)
+  - [Notes](#notes)
 
-## Getting Started
+---
 
-### Prerequisites
+## Getting Started with Docker
 
-Make sure you have the following installed on your machine:
+Follow these steps to set up the project using Docker:
 
-- [Node.js](https://nodejs.org/) (v14 or higher)
-- [Yarn](https://yarnpkg.com/) (v1.22 or higher)
-- [MySQL](https://www.mysql.com/) (v5.7 or higher)
-
-### Installation
-
-1. Clone the Repository:
-
+1. **Clone the Repository**:
    ```bash
    git clone https://github.com/your-username/Justdoit-v1.0.git
    cd Justdoit-v1.0
    ```
 
-2. Install Dependencies:
-   ```bash
-   yarn install
-   ```
-
-### Setting Up the Backend (Server)
-
-1. Navigate to the `server` directory:
-
-   ```bash
-   cd server
-   ```
-
-2. Install server dependencies:
-
-   ```bash
-   yarn install
-   ```
-
-3. Set up the MySQL database:
-
-   - Start your MySQL server and create a new database:
-
-     ```sql
-     CREATE DATABASE bet;
-     ```
-
-   - Copy `.env.example` into `.env` file in the `server` directory:
-
-     ```bash
-     cp .env.example .env
-     ```
-
-4. Start the server:
-
-   ```bash
-   node index.js
-   ```
-
-   This will start the Express server on [http://localhost:3001](http://localhost:3001).
-
-### Setting Up the Frontend (Client)
-
-1. Navigate to the `client` directory:
-
+2. **Install Frontend Dependencies**:
    ```bash
    cd client
-   ```
-
-2. Install client dependencies:
-
-   ```bash
    yarn install
    ```
 
-3. Copy `.env.example` into `.env` file in the `client` directory:
-
+3. **Set Up Frontend Environment Variables**:
+   Copy the example `.env` file into a new `.env` file:
    ```bash
    cp .env.example .env
    ```
 
-4. Start the client:
+4. **Build the Frontend**:
+   Build the frontend into static files and copy them into the backend folder:
+   ```bash
+   yarn build
+   yarn copy:dist
+   ```
 
+5. **Set Up Backend Environment Variables**:
+   Navigate to the backend folder and copy the example `.env` file:
+   ```bash
+   cd ../server
+   cp .env.example .env
+   ```
+   - If you want to use a remote database, register for a free database on [Render](https://render.com).
+   - Set `USE_LOCAL_DB=false` and update `RENDER_DB_URL` with the database URL provided by Render.
+
+6. **Run the Application with Docker**:
+   Build and start the backend and database containers:
+   ```bash
+   docker compose up --build -d
+   ```
+
+   The server will be available at [http://localhost:3001/Justdoit-v1.0/](http://localhost:3001/Justdoit-v1.0/).
+
+---
+
+## Using a Local Database
+
+If you prefer to use a local MySQL database, follow these steps:
+
+1. **Set Up the MySQL Database**:
+   - Start your MySQL server and create a new database:
+     ```sql
+     CREATE DATABASE bet;
+     ```
+   - Set `USE_LOCAL_DB=true` in the `.env` file located in the `server/` directory.
+
+2. **Start the Backend Server**:
+   Start the backend server with hot reload:
    ```bash
    yarn dev
    ```
+   The backend will be available at [http://localhost:3001](http://localhost:3001).
 
-   This will start the Vite development server and you can view the application in your browser at [http://localhost:5173](http://localhost:5173).
-
-### Build for Production
-
-To build the application for production:
-
-1. Navigate to the `client` directory:
-
+3. **Start the Frontend**:
+   Navigate to the `client` directory and start the Vite development server:
    ```bash
-   cd client
+   cd ../client
+   yarn dev
    ```
+   The frontend will be available at [http://localhost:5173/Justdoit-v1.0](http://localhost:5173/Justdoit-v1.0).
 
-2. Run the build command:
+---
 
-   ```bash
-   yarn build
-   ```
+## Linting and Formatting
 
-   The production-ready files will be generated in the `dist` directory.
+To maintain code quality, use the following commands:
 
-### Linting and Formatting
+- **Run ESLint**:
+  ```bash
+  yarn lint
+  ```
 
-To run ESLint:
+- **Run Prettier**:
+  ```bash
+  yarn format
+  ```
 
-```bash
-yarn lint
-```
+---
 
-To run Prettier:
+## Notes
 
-```bash
-yarn format
-```
+- Ensure that Docker is installed and running on your system if you are using the Docker setup.
+- For local database usage, make sure your MySQL server is running and accessible.
 
-### Adding New Packages
+---
 
-To add a new package to the project, use the following command:
-
-```bash
-yarn add <package-name>
-```
-
-For example, to add axios for making HTTP requests:
-
-```bash
-yarn add axios
-```
-
-To add a development dependency, use the -D flag:
-
-```bash
-yarn add -D <package-name>
-```
-
-For example, to add jest for testing:
-
-```bash
-yarn add -D jest
-```
+Enjoy building and customizing Justdoit-v1.0!

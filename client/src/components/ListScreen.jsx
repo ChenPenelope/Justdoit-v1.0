@@ -66,7 +66,6 @@ const ListScreen = () => {
             <th>ID</th>
             <th>Username</th>
             <th>Chips</th>
-            <th>History IDs</th>
             <th>Created At</th>
             <th style={{ width: '60px', textAlign: 'center' }}>Actions</th>
           </tr>
@@ -78,7 +77,6 @@ const ListScreen = () => {
               <td>{user.id}</td>
               <td>{user.username}</td>
               <td>{user.chips}</td>
-              <td>{user.history_ids ? JSON.stringify(user.history_ids) : 'null'}</td>
               <td>{new Date(user.created_at).toLocaleString()}</td>
               <td style={{ textAlign: 'center' }}>
                 <FaEdit
