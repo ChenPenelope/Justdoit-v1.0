@@ -28,7 +28,7 @@ function BettingScreen({ currentUser }) {
     fetchUser();
   }, [currentUser]);
 
-  const handleBet = (option, multiplier, index) => {
+  const handleBet = (option, index) => {
     const amount = parseInt(inputValues[index]);
     if (isNaN(amount) || amount <= 0) {
       alert('請輸入有效的投注籌碼');
@@ -44,7 +44,7 @@ function BettingScreen({ currentUser }) {
     // Determine win or lose (50% chance)
     const isWin = Math.random() >= 0.5;
     if (isWin) {
-      const winAmount = Math.floor(amount * multiplier);
+      const winAmount = amount;
       newChips += winAmount;
     }
 
@@ -52,7 +52,7 @@ function BettingScreen({ currentUser }) {
     updateUserChips(user.id, newChips);
 
     // Update history
-    const newHistory = [...history, { currentUser, option, amount, multiplier, isWin }];
+    const newHistory = [...history, { currentUser, option, amount, isWin }];
     setHistory(newHistory);
 
     // clear the input
@@ -89,7 +89,7 @@ function BettingScreen({ currentUser }) {
       <div className='betting-options'>
         {bettingOptions.map((option, index) => (
           <BettingOption
-            key={index}
+            key={option}
             index={index}
             option={option}
             inputValues={inputValues}
