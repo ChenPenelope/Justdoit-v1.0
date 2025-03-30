@@ -13,8 +13,8 @@ function BetHistory({ history }) {
         {[...history].reverse().map((item, index) => (
           <div key={index}>
             選項{item.option}, 籌碼: {item.amount} &nbsp;
-            {/*{item.isWin && <span className='result-win'>勝利+{item.amount * item.multiplier}</span>}*/}
-            {/*{!item.isWin && <span className='result-lose'>失敗-{item.amount}</span>}*/}
+            {item.isWin && <span className='result-win'>勝利+{item.amount}</span>}
+            {!item.isWin && <span className='result-lose'>失敗-{item.amount}</span>}
           </div>
         ))}
       </div>
