@@ -2,11 +2,11 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const app = require('./app');
 
 const userRoutes = require('./routes/userRoutes'); // Import the user routes
 
 dotenv.config();
-const app = express();
 const port = 3001;
 
 app.use(cors());
@@ -25,6 +25,6 @@ app.get('/Justdoit-v1.0/*', (req, res) => {
 
 
 // Start the server
-app.listen(port, () => {
+app.listen(port, '0,0,0,0', () => {
   console.log(`Server running at http://localhost:${port}`);
 });
