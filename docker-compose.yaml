@@ -16,9 +16,10 @@ services:
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=bet
+      - USE_LOCAL_DB=true
     networks:
       - app-network
-
+    restart: always
   mysql:
     image: mysql:latest
     restart: always
@@ -33,9 +34,11 @@ services:
       - ./mysql-data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      retries: 3
-      start_period: 20s
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
 
 networks:
   app-network:
+    driver: bridge
