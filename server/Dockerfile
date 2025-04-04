@@ -11,8 +11,11 @@ RUN npm install
 # Copy backend code
 COPY . .
 
+# Install dependencies again to ensure all files are properly linked
+RUN npm install
+
 # Expose the backend port
 EXPOSE 3001
 
 # Start the server
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
