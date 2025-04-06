@@ -9,22 +9,50 @@ const userRoutes = require('./routes/userRoutes'); // Import the user routes
 dotenv.config();
 const port = 3001;
 
-app.use(cors());
-app.use(express.json());
-
-// Use the user routes
-app.use('/api/users', userRoutes);
-
-// Serve frontend static files
-app.use('/Justdoit-v1.0', express.static(path.join(__dirname, './dist'))); // Adjust path if using React
-
-// Catch-all to serve `index.html` for non-API routes
-app.get('/Justdoit-v1.0/*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist/index.html'));
+// 安全性標頭配置
+app.use((req, res, next) => {
+  res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline'");
+  next();
 });
 
+// CORS 配置
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
-// Start the server
-app.listen(port, '0,0,0,0', () => {
+app.use(express.json());
+
+// 根路由處理 - 必須在最前面
+app.get('/', (req, res) => {
+  res.json({ message: "Welcome to JustDoIt API Server" });
+});
+
+// API 測試路由
+app.get('/api', (req, res) => {
+  res.json({ message: "Hello from server!" });
+});
+
+// API 路由
+app.use('/api/users', userRoutes);
+
+// 靜態文件服務
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+// 所有其他路由重定向到前端
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+});
+
+// 錯誤處理中間件
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: "Something broke!" });
+});
+
+// 啟動服務器
+app.listen(port, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${port}`);
 });
