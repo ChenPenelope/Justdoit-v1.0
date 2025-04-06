@@ -7,11 +7,23 @@ const sequelize = require("./db");
 const app = express();
 const port = 3001;
 
+// CORS configuration
+const corsOptions = {
+  origin: '*', // 在生產環境中應該設置為具體的域名
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corOptions));
 app.use(express.json());
 
 // Routes
+app.get("/", (req, res) => {
+    res.json({ message: "Welcome to JustDoIt API Server" });
+});
+
 app.get("/api", (req, res) => {
     res.json({ message: "Hello from server!" });
 });
