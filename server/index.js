@@ -38,7 +38,7 @@ app.get('/api', (req, res) => {
 // API 路由
 app.use('/api/users', userRoutes);
 
-// 靜態文件服務
+// 靜態文件服務 - 修改路徑
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // 所有其他路由重定向到前端
