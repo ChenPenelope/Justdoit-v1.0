@@ -2,7 +2,7 @@
 FROM node:18
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /app/server
 
 # Copy package.json and install dependencies
 COPY package*.json ./
