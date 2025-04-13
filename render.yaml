@@ -19,6 +19,8 @@ services:
         value: false
       - key: NODE_ENV
         value: production
+      - key: RENDER_DB_URL
+        sync: false
     healthCheckPath: /api
     autoDeploy: true
     plan: free
