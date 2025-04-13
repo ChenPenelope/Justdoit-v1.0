@@ -1,0 +1,9 @@
+@media (max-width: 768px) {
+  .betting-options {
+    grid-template-columns: 1fr;
+  }
+
+  .user-info {
+    margin-bottom: 1rem;
+  }
+}

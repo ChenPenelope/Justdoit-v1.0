@@ -1,0 +1,31 @@
+{
+  "name": "justdoit-server",
+  "version": "1.0.0",
+  "description": "JustDoIt Server",
+  "main": "index.js",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mysql2": "^3.13.0",
+    "pg": "^8.14.1",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
+    "nodemon": "^3.1.9",
+    "prettier": "3.5.3"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "lint:check": "eslint . ",
+    "lint": "eslint . --fix ",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

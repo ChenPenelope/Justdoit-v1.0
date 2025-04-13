@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  server:
+    image: nodejs
+    build: ./server
+    container_name: server
+    ports:
+      - "3001:3001"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=bet
+      - USE_LOCAL_DB=true
+      - NODE_ENV=development
+    networks:
+      - app-network
+    restart: always
+
+  mysql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bet
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+networks:
+  app-network:
+    driver: bridge
