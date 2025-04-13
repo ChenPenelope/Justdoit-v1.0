@@ -14,8 +14,14 @@ COPY server/ .
 # Install dependencies again to ensure all files are properly linked
 RUN npm install
 
-# Copy frontend build files
-COPY client/dist ./client/dist
+# Copy frontend code and build it
+COPY client/ ./client/
+WORKDIR /app/client
+RUN npm install
+RUN npm run build
+
+# Return to server directory
+WORKDIR /app
 
 # Expose the backend port
 EXPOSE 3001
