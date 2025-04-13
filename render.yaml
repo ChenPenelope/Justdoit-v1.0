@@ -1,16 +1,16 @@
 services:
   - type: web
     name: justdoit-server
-    env: node
-    buildCommand: cd server && npm install
-    startCommand: cd server && node index.js
+    env: docker
+    dockerfilePath: server/Dockerfile
+    dockerCommand: node index.js
     envVars:
       - key: DB_HOST
-        value: your-db-host
+        value: your-production-db-host
       - key: DB_PORT
         value: 3306
       - key: DB_USER
-        value: your-db-user
+        value: your-production-db-user
       - key: DB_PASSWORD
         sync: false
       - key: DB_NAME
