@@ -29,6 +29,42 @@ const User = sequelize.define("User", {
     timestamps: false,  // Disable Sequelize's automatic timestamps
 });
 
+// Define the BetHistory model
+const BetHistory = sequelize.define("BetHistory", {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    option: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    amount: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    phase: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    created_at: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW,
+    },
+}, {
+    tableName: "bet_history",
+    timestamps: false,
+});
+
+// 建立關聯
+User.hasMany(BetHistory, { foreignKey: 'userId' });
+BetHistory.belongsTo(User, { foreignKey: 'userId' });
+
 // Route to create a new user
 router.post("/", async (req, res) => {
     try {
@@ -167,6 +203,41 @@ router.post('/admin', (req, res) => {
       res.send(true);
     else
       res.send(false);
+});
+
+// Route to get user's bet history
+router.get("/:id/history", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const history = await BetHistory.findAll({
+            where: { userId: id },
+            order: [['created_at', 'DESC']]
+        });
+        res.status(200).json(history);
+    } catch (err) {
+        console.error("Error fetching bet history:", err.message);
+        res.status(500).json({ error: "Failed to fetch bet history" });
+    }
+});
+
+// Route to add bet history
+router.post("/:id/history", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { option, amount, phase } = req.body;
+        
+        const history = await BetHistory.create({
+            userId: id,
+            option,
+            amount,
+            phase
+        });
+        
+        res.status(201).json(history);
+    } catch (err) {
+        console.error("Error adding bet history:", err.message);
+        res.status(500).json({ error: "Failed to add bet history" });
+    }
 });
 
 module.exports = router;

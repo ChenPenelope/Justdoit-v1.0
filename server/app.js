@@ -19,6 +19,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// 服務靜態文件
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
 // Routes
 app.get("/", (req, res) => {
     res.json({ message: "Welcome to JustDoIt API Server" });
@@ -26,6 +29,11 @@ app.get("/", (req, res) => {
 
 app.get("/api", (req, res) => {
     res.json({ message: "Hello from server!" });
+});
+
+// 通配符路由 - 支持前端路由
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 // Error handling

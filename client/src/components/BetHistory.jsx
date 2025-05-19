@@ -1,25 +1,46 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
+import './BetHistory.css';
 
-BetHistory.propTypes = {
-  history: PropTypes.array.isRequired,
+const BetHistory = ({ history }) => {
+    const getPhaseText = (phase) => {
+        switch (phase) {
+            case 1:
+                return '第一輪';
+            case 2:
+                return '第二輪';
+            case 3:
+                return '第三輪';
+            default:
+                return '未知';
+        }
+    };
+
+    return (
+        <div className="bet-history">
+            <h3>投注歷史</h3>
+            <div className="history-list">
+                {history.slice().reverse().map((item, index) => (
+                    <div key={index} className="history-item">
+                        <span className="phase">{getPhaseText(item.phase)}</span>
+                        <span className="option">{item.option}</span>
+                        <span className="amount">{item.amount}</span>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
-function BetHistory({ history }) {
-  return (
-    <div className='bet-history'>
-      <div className='history-header'>投注歷史</div>
-      <div className='history-list' id='history-list'>
-        {[...history].reverse().map((item, index) => (
-          <div key={index}>
-            選項{item.option}, 籌碼: {item.amount} &nbsp;
-            {item.isWin && <span className='result-win'>勝利+{item.amount}</span>}
-            {!item.isWin && <span className='result-lose'>失敗-{item.amount}</span>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+BetHistory.propTypes = {
+    history: PropTypes.arrayOf(
+        PropTypes.shape({
+            phase: PropTypes.number.isRequired,
+            option: PropTypes.string.isRequired,
+            amount: PropTypes.number.isRequired,
+            created_at: PropTypes.string.isRequired
+        })
+    ).isRequired
+};
 
 export default BetHistory;

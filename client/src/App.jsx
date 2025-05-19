@@ -10,6 +10,37 @@ import ListScreen from './components/ListScreen';
 import RegistrationScreen from './components/RegistrationScreen';
 import WelcomeScreen from './components/WelcomeScreen';
 
+// 錯誤邊界組件
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('路由錯誤:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container">
+          <h1>發生錯誤</h1>
+          <button onClick={() => window.location.href = '/'}>
+            返回首頁
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 function App() {
   const base = import.meta.env.BASE_URL;
   const [currentUser, setCurrentUser] = useState(null);
@@ -32,24 +63,23 @@ function App() {
     return false;
   };
 
-  // remove the cookie when testing the login
-  Cookies.remove('isAdmin');
-
   return (
     <Router basename={base}>
-      <Routes>
-        <Route path='/' element={<WelcomeScreen />} />
-        <Route path='/register' element={<RegistrationScreen setCurrentUser={setCurrentUser} />} />
-        <Route path='/bet' element={<BettingScreen currentUser={currentUser} />} />
-        <Route
-          path='/list'
-          element={isAdmin ? <ListScreen /> : <AdminLogin onLogin={handleAdminLogin} />}
-        />
-        <Route
-          path='*'
-          element={Cookies.get('username') ? <Navigate to='/bet' /> : <Navigate to='/register' />}
-        />
-      </Routes>
+      <ErrorBoundary>
+        <Routes>
+          <Route path='/' element={<WelcomeScreen />} />
+          <Route path='/register' element={<RegistrationScreen setCurrentUser={setCurrentUser} />} />
+          <Route path='/bet' element={<BettingScreen currentUser={currentUser} />} />
+          <Route
+            path='/list'
+            element={isAdmin ? <ListScreen /> : <AdminLogin onLogin={handleAdminLogin} />}
+          />
+          <Route
+            path='*'
+            element={Cookies.get('username') ? <Navigate to='/bet' /> : <Navigate to='/register' />}
+          />
+        </Routes>
+      </ErrorBoundary>
     </Router>
   );
 }

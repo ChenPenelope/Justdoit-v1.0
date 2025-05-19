@@ -17,13 +17,20 @@ function BettingScreen({ currentUser }) {
   const [history, setHistory] = useState([]);
   const [inputValues, setInputValues] = useState({});
   const [user, setUser] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(300); // 5分鐘
-  const [bettingPhase, setBettingPhase] = useState(1); // 1: 第一階段, 2: 第二階段
+  const [timeLeft, setTimeLeft] = useState(180); // 3分鐘
+  const [bettingPhase, setBettingPhase] = useState(1); // 1: 第一階段, 2: 第二階段, 3: 第三階段
   const [bettingOpen, setBettingOpen] = useState(true);
   const [roundResults, setRoundResults] = useState(null);
   const [bets, setBets] = useState({ option1: 0, option2: 0 });
+  const [correctOptionPosition, setCorrectOptionPosition] = useState('A'); // 'A' 或 'B'，表示正確答案的位置
+  const [bettingHistory, setBettingHistory] = useState([]);
   
   currentUser = currentUser || Cookies.get('username');
+
+  // 隨機決定正確答案的位置
+  const randomizeCorrectOptionPosition = () => {
+    setCorrectOptionPosition(Math.random() < 0.5 ? 'A' : 'B');
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,6 +40,7 @@ function BettingScreen({ currentUser }) {
       setChipCount(user?.chips || 1000);
     };
     fetchUser();
+    randomizeCorrectOptionPosition(); // 初始化時隨機決定位置
   }, [currentUser]);
 
   // 倒計時效果
@@ -58,64 +66,96 @@ function BettingScreen({ currentUser }) {
   };
 
   const startNextPhase = () => {
-    if (bettingPhase === 1) {
-      setBettingPhase(2);
-      setTimeLeft(300);
+    if (bettingPhase < 3) {
+      setBettingPhase(bettingPhase + 1);
+      setTimeLeft(180);
       setBettingOpen(true);
       setRoundResults(null);
       setBets({ option1: 0, option2: 0 });
+      randomizeCorrectOptionPosition(); // 進入新階段時重新隨機決定位置
     } else {
       setBettingPhase(1);
-      setTimeLeft(300);
+      setTimeLeft(180);
       setBettingOpen(true);
       setRoundResults(null);
       setBets({ option1: 0, option2: 0 });
+      randomizeCorrectOptionPosition(); // 開始新一輪時重新隨機決定位置
     }
   };
 
-  const handleBet = (option, index) => {
-    const amount = parseInt(inputValues[index]);
-    if (isNaN(amount) || amount <= 0) {
-      alert('請輸入有效的投注籌碼');
-      return;
+  const handleBet = async (option) => {
+    if (bettingPhase === 'results') return;
+    
+    try {
+        const response = await fetch(`/api/users/${user.id}/bet`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                option,
+                amount: betAmount,
+                phase: bettingPhase === 'phase1' ? 1 : bettingPhase === 'phase2' ? 2 : 3
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error('投注失敗');
+        }
+
+        const data = await response.json();
+        
+        // 更新用戶籌碼
+        setUser(prev => ({
+            ...prev,
+            chips: data.chips
+        }));
+
+        // 添加投注歷史
+        const historyResponse = await fetch(`/api/users/${user.id}/history`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                option,
+                amount: betAmount,
+                phase: bettingPhase === 'phase1' ? 1 : bettingPhase === 'phase2' ? 2 : 3
+            }),
+        });
+
+        if (!historyResponse.ok) {
+            throw new Error('保存投注歷史失敗');
+        }
+
+        const historyData = await historyResponse.json();
+        setBettingHistory(prev => [...prev, historyData]);
+
+    } catch (error) {
+        console.error('投注錯誤:', error);
+        alert(error.message);
     }
-
-    if (chipCount < amount) {
-      alert('籌碼不足!');
-      return;
-    }
-
-    if (!bettingOpen) {
-      alert('本階段投注已結束！');
-      return;
-    }
-
-    var newChips = chipCount - amount;
-    setChipCount(newChips);
-    updateUserChips(user.id, newChips);
-
-    // 更新投注統計
-    setBets(prev => ({
-      ...prev,
-      [option === 'A' ? 'option1' : 'option2']: 
-        prev[option === 'A' ? 'option1' : 'option2'] + amount
-    }));
-
-    // Update history
-    const newHistory = [...history, { 
-      currentUser, 
-      option, 
-      amount, 
-      phase: bettingPhase 
-    }];
-    setHistory(newHistory);
-
-    // clear the input
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      [index]: '',
-    }));
   };
+
+  // 在組件加載時獲取投注歷史
+  useEffect(() => {
+    const fetchBetHistory = async () => {
+        try {
+            const response = await fetch(`/api/users/${user.id}/history`);
+            if (!response.ok) {
+                throw new Error('獲取投注歷史失敗');
+            }
+            const data = await response.json();
+            setBettingHistory(data);
+        } catch (error) {
+            console.error('獲取投注歷史錯誤:', error);
+        }
+    };
+
+    if (user) {
+        fetchBetHistory();
+    }
+  }, [user]);
 
   const handleInputChange = (index, value) => {
     setInputValues((prevValues) => ({
@@ -148,9 +188,13 @@ function BettingScreen({ currentUser }) {
 
       {!bettingOpen && roundResults && (
         <div className="results-container">
-          <VotingResults results={roundResults} phase={bettingPhase} />
+          <VotingResults 
+            results={roundResults} 
+            phase={bettingPhase} 
+            correctOptionPosition={correctOptionPosition}
+          />
           <button onClick={startNextPhase} className='new-round-button'>
-            {bettingPhase === 1 ? '進入第二階段' : '開始新一輪'}
+            {bettingPhase < 3 ? `進入第 ${bettingPhase + 1} 階段` : '開始新一輪'}
           </button>
         </div>
       )}
@@ -166,12 +210,13 @@ function BettingScreen({ currentUser }) {
               inputValues={inputValues}
               handleInputChange={handleInputChange}
               handleBet={handleBet}
+              correctOptionPosition={correctOptionPosition}
             />
           ))}
         </div>
       )}
 
-      <BetHistory history={history} />
+      <BetHistory history={bettingHistory} />
     </div>
   );
 }
