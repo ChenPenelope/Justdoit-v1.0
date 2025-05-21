@@ -3,68 +3,59 @@ const { Sequelize } = require("sequelize");
 
 let sequelize;
 
-// 檢查是否使用本地數據庫
-if (process.env.USE_LOCAL_DB === "true") {
-    console.log("Using local MySQL database");
+if (process.env.DATABASE_URL) {
+    // 使用 Render 提供的數據庫 URL
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+        dialect: 'postgres',
+        protocol: 'postgres',
+        dialectOptions: {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        },
+        logging: false
+    });
+} else {
+    // 本地開發環境
     sequelize = new Sequelize(
-        process.env.DB_NAME || 'bet',
+        process.env.DB_NAME || 'justdoit',
         process.env.DB_USER || 'root',
-        process.env.DB_PASSWORD || 'root',
+        process.env.DB_PASSWORD || '',
         {
             host: process.env.DB_HOST || 'localhost',
             port: process.env.DB_PORT || 3306,
-            dialect: "mysql",
-            logging: false,
+            dialect: 'mysql',
+            logging: false
         }
     );
-} else {
-    console.log("Using production database");
-    // 如果提供了 RENDER_DB_URL，使用它
-    if (process.env.RENDER_DB_URL) {
-        console.log("Using RENDER_DB_URL");
-        sequelize = new Sequelize(process.env.RENDER_DB_URL, {
-            dialect: "postgres",
-            dialectOptions: {
-                ssl: {
-                    require: true,
-                    rejectUnauthorized: false
-                }
-            },
-            logging: false,
-        });
-    } else {
-        // 否則使用單獨的配置
-        console.log("Using individual database configuration");
-        sequelize = new Sequelize(
-            process.env.DB_NAME || 'bet',
-            process.env.DB_USER,
-            process.env.DB_PASSWORD,
-            {
-                host: process.env.DB_HOST,
-                port: process.env.DB_PORT || 3306,
-                dialect: "mysql",
-                logging: false,
-            }
-        );
-    }
 }
 
 // 測試數據庫連接
-sequelize.authenticate()
-    .then(() => {
-        console.log("Database connection established successfully.");
-    })
-    .catch((err) => {
-        console.error("Unable to connect to the database:", err.message);
-    });
+const testConnection = async () => {
+    try {
+        await sequelize.authenticate();
+        console.log('數據庫連接成功。');
+        
+        // 同步數據庫模型
+        await sequelize.sync({ alter: true });
+        console.log('數據庫模型同步完成。');
+        
+        // 檢查是否需要創建初始管理員
+        const Admin = require('./models/Admin');
+        const adminCount = await Admin.count();
+        if (adminCount === 0) {
+            await Admin.create({
+                username: 'admin',
+                password: 'admin123' // 請在生產環境中更改此密碼
+            });
+            console.log('初始管理員創建完成。');
+        }
+    } catch (error) {
+        console.error('數據庫操作錯誤:', error);
+    }
+};
 
-// 同步數據庫模型
-sequelize.sync()
-    .then(() => {
-        console.log("Database models synchronized successfully.");
-    })
-    .catch((err) => {
-        console.error("Failed to sync database models:", err.message);
-    });
+testConnection();
 
 module.exports = sequelize;
