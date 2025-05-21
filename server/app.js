@@ -5,7 +5,7 @@ const path = require("path");
 const sequelize = require("./db");
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 
 // CORS configuration
 const corsOptions = {
@@ -41,5 +41,22 @@ app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: "Something broke!" });
 });
+
+// 啟動服務器
+const startServer = async () => {
+    try {
+        // 等待數據庫初始化完成
+        await sequelize.authenticate();
+        
+        app.listen(port, () => {
+            console.log(`服務器運行在端口 ${port}`);
+        });
+    } catch (error) {
+        console.error('無法啟動服務器:', error);
+        process.exit(1);
+    }
+};
+
+startServer();
 
 module.exports = app;

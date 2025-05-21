@@ -31,31 +31,38 @@ if (process.env.DATABASE_URL) {
     );
 }
 
-// 測試數據庫連接
-const testConnection = async () => {
+// 初始化數據庫
+const initDatabase = async () => {
     try {
+        // 測試連接
         await sequelize.authenticate();
         console.log('數據庫連接成功。');
-        
-        // 同步數據庫模型
+
+        // 導入所有模型
+        const models = require('./models');
+
+        // 同步所有模型到數據庫
         await sequelize.sync({ alter: true });
         console.log('數據庫模型同步完成。');
-        
+
         // 檢查是否需要創建初始管理員
-        const Admin = require('./models/Admin');
-        const adminCount = await Admin.count();
+        const adminCount = await models.Admin.count();
         if (adminCount === 0) {
-            await Admin.create({
+            await models.Admin.create({
                 username: 'admin',
                 password: 'admin123' // 請在生產環境中更改此密碼
             });
             console.log('初始管理員創建完成。');
         }
+
+        return models;
     } catch (error) {
-        console.error('數據庫操作錯誤:', error);
+        console.error('數據庫初始化錯誤:', error);
+        throw error;
     }
 };
 
-testConnection();
+// 執行初始化
+initDatabase();
 
 module.exports = sequelize;
