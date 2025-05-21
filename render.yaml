@@ -34,3 +34,4 @@ databases:
     databaseName: justdoit
     user: justdoit
     plan: free
+    region: singapore
