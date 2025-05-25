@@ -104,12 +104,12 @@ function BettingScreen({ currentUser }) {
         }
 
         const data = await response.json();
-        
+
         // 更新用戶籌碼
         setUser(prev => ({
-            ...prev,
+      ...prev,
             chips: data.chips
-        }));
+    }));
 
         // 添加投注歷史
         const historyResponse = await fetch(`/api/users/${user.id}/history`, {
@@ -118,7 +118,7 @@ function BettingScreen({ currentUser }) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                option,
+      option, 
                 amount: betAmount,
                 phase: bettingPhase === 'phase1' ? 1 : bettingPhase === 'phase2' ? 2 : 3
             }),

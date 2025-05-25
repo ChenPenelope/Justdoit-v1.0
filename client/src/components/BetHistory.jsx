@@ -16,7 +16,7 @@ const BetHistory = ({ history }) => {
         }
     };
 
-    return (
+  return (
         <div className="bet-history">
             <h3>投注歷史</h3>
             <div className="history-list">
@@ -25,11 +25,11 @@ const BetHistory = ({ history }) => {
                         <span className="phase">{getPhaseText(item.phase)}</span>
                         <span className="option">{item.option}</span>
                         <span className="amount">{item.amount}</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 BetHistory.propTypes = {
