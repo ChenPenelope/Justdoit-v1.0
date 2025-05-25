@@ -2,45 +2,36 @@ version: '3.8'
 
 services:
   server:
-    image: nodejs
-    build: ./server
-    container_name: server
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
     ports:
-      - "3001:3001"
+      - "8081:8081"
+    environment:
+      - NODE_ENV=production
+      - PORT=8081
+      - DATABASE_URL=${DATABASE_URL}
     depends_on:
-      mysql:
-        condition: service_healthy
-    environment:
-      - DB_HOST=mysql
-      - DB_PORT=3306
-      - DB_USER=root
-      - DB_PASSWORD=root
-      - DB_NAME=bet
-      - USE_LOCAL_DB=true
-      - NODE_ENV=development
+      - db
     networks:
       - app-network
-    restart: always
 
-  mysql:
-    image: mysql:latest
-    restart: always
+  db:
+    image: postgres:14-alpine
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: bet
+      - POSTGRES_USER=${DB_USER:-justdoit}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-justdoit}
+      - POSTGRES_DB=${DB_NAME:-justdoit}
     ports:
-      - "3307:3306"
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - app-network
-    volumes:
-      - ./mysql-data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data: 

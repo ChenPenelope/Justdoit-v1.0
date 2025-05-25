@@ -2,45 +2,42 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './BetHistory.css';
 
-const BetHistory = ({ history }) => {
-    const getPhaseText = (phase) => {
-        switch (phase) {
-            case 1:
-                return '第一輪';
-            case 2:
-                return '第二輪';
-            case 3:
-                return '第三輪';
-            default:
-                return '未知';
-        }
-    };
+function BetHistory({ history }) {
+  if (!history || history.length === 0) {
+    return (
+      <div className="bet-history">
+        <h3>投注歷史</h3>
+        <p className="no-history">尚無投注記錄</p>
+      </div>
+    );
+  }
 
   return (
-        <div className="bet-history">
-            <h3>投注歷史</h3>
-            <div className="history-list">
-                {history.slice().reverse().map((item, index) => (
-                    <div key={index} className="history-item">
-                        <span className="phase">{getPhaseText(item.phase)}</span>
-                        <span className="option">{item.option}</span>
-                        <span className="amount">{item.amount}</span>
+    <div className="bet-history">
+      <h3>投注歷史</h3>
+      <div className="history-list">
+        {history.map((bet, index) => (
+          <div key={index} className="history-item">
+            <div className="history-phase">第 {bet.phase} 階段</div>
+            <div className="history-details">
+              <span className="history-option">選項 {bet.option}</span>
+              <span className="history-amount">{bet.amount} 籌碼</span>
+            </div>
           </div>
         ))}
       </div>
     </div>
   );
-};
+}
 
 BetHistory.propTypes = {
-    history: PropTypes.arrayOf(
-        PropTypes.shape({
-            phase: PropTypes.number.isRequired,
-            option: PropTypes.string.isRequired,
-            amount: PropTypes.number.isRequired,
-            created_at: PropTypes.string.isRequired
-        })
-    ).isRequired
+  history: PropTypes.arrayOf(
+    PropTypes.shape({
+      phase: PropTypes.number.isRequired,
+      option: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired
+    })
+  ).isRequired
 };
 
 export default BetHistory;

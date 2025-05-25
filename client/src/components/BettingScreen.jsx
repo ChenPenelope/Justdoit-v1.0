@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
 import { getUserByName, updateUserChips } from '../api/userApi';
+import AdminControls from './AdminControls';
 import BetHistory from './BetHistory';
 import BettingOption from './BettingOption';
 import VotingResults from './VotingResults';
@@ -24,24 +25,38 @@ function BettingScreen({ currentUser }) {
   const [bets, setBets] = useState({ option1: 0, option2: 0 });
   const [correctOptionPosition, setCorrectOptionPosition] = useState('A'); // 'A' 或 'B'，表示正確答案的位置
   const [bettingHistory, setBettingHistory] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [error, setError] = useState(null);
   
   currentUser = currentUser || Cookies.get('username');
 
   // 隨機決定正確答案的位置
   const randomizeCorrectOptionPosition = () => {
-    setCorrectOptionPosition(Math.random() < 0.5 ? 'A' : 'B');
+    const newPosition = Math.random() < 0.5 ? 'A' : 'B';
+    setCorrectOptionPosition(newPosition);
+    console.log(`第 ${bettingPhase} 階段的正確選項位置: ${newPosition}`);
   };
 
   useEffect(() => {
     const fetchUser = async () => {
-      const user = await getUserByName(currentUser);
-      setUser(user);
-      setHistory(user?.history || []);
-      setChipCount(user?.chips || 1000);
+      try {
+        const user = await getUserByName(currentUser);
+        setUser(user);
+        setHistory(user?.history || []);
+        setChipCount(user?.chips || 1000);
+        setIsAdmin(user?.role === 'admin');
+      } catch (error) {
+        setError('獲取用戶信息失敗');
+        console.error('獲取用戶信息錯誤:', error);
+      }
     };
     fetchUser();
-    randomizeCorrectOptionPosition(); // 初始化時隨機決定位置
   }, [currentUser]);
+
+  // 當階段改變時，重新隨機決定正確選項位置
+  useEffect(() => {
+    randomizeCorrectOptionPosition();
+  }, [bettingPhase]);
 
   // 倒計時效果
   useEffect(() => {
@@ -66,74 +81,79 @@ function BettingScreen({ currentUser }) {
   };
 
   const startNextPhase = () => {
+    if (!isAdmin) {
+      setError('只有管理者可以操作此功能');
+      return;
+    }
+
     if (bettingPhase < 3) {
       setBettingPhase(bettingPhase + 1);
       setTimeLeft(180);
       setBettingOpen(true);
       setRoundResults(null);
       setBets({ option1: 0, option2: 0 });
-      randomizeCorrectOptionPosition(); // 進入新階段時重新隨機決定位置
     } else {
       setBettingPhase(1);
       setTimeLeft(180);
       setBettingOpen(true);
       setRoundResults(null);
       setBets({ option1: 0, option2: 0 });
-      randomizeCorrectOptionPosition(); // 開始新一輪時重新隨機決定位置
     }
   };
 
   const handleBet = async (option) => {
-    if (bettingPhase === 'results') return;
-    
+    if (!bettingOpen) {
+      setError('當前階段已結束');
+      return;
+    }
+
     try {
-        const response = await fetch(`/api/users/${user.id}/bet`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                option,
-                amount: betAmount,
-                phase: bettingPhase === 'phase1' ? 1 : bettingPhase === 'phase2' ? 2 : 3
-            }),
-        });
+      const response = await fetch(`/api/users/${user.id}/bet`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          option,
+          amount: inputValues[option] || 0,
+          phase: bettingPhase
+        }),
+      });
 
-        if (!response.ok) {
-            throw new Error('投注失敗');
-        }
+      if (!response.ok) {
+        throw new Error('投注失敗');
+      }
 
-        const data = await response.json();
+      const data = await response.json();
+      setUser(prev => ({
+        ...prev,
+        chips: data.chips
+      }));
 
-        // 更新用戶籌碼
-        setUser(prev => ({
-      ...prev,
-            chips: data.chips
-    }));
+      // 更新投注歷史
+      const historyResponse = await fetch(`/api/users/${user.id}/history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          option,
+          amount: inputValues[option] || 0,
+          phase: bettingPhase
+        }),
+      });
 
-        // 添加投注歷史
-        const historyResponse = await fetch(`/api/users/${user.id}/history`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-      option, 
-                amount: betAmount,
-                phase: bettingPhase === 'phase1' ? 1 : bettingPhase === 'phase2' ? 2 : 3
-            }),
-        });
+      if (!historyResponse.ok) {
+        throw new Error('保存投注歷史失敗');
+      }
 
-        if (!historyResponse.ok) {
-            throw new Error('保存投注歷史失敗');
-        }
-
-        const historyData = await historyResponse.json();
-        setBettingHistory(prev => [...prev, historyData]);
+      const historyData = await historyResponse.json();
+      setBettingHistory(prev => [...prev, historyData]);
+      setError(null);
 
     } catch (error) {
-        console.error('投注錯誤:', error);
-        alert(error.message);
+      setError(error.message);
+      console.error('投注錯誤:', error);
     }
   };
 
@@ -186,6 +206,12 @@ function BettingScreen({ currentUser }) {
         </div>
       </div>
 
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
       {!bettingOpen && roundResults && (
         <div className="results-container">
           <VotingResults 
@@ -199,22 +225,27 @@ function BettingScreen({ currentUser }) {
         </div>
       )}
 
-      {bettingOpen && (
-        <div className='betting-options'>
-          {bettingOptions.map((option, index) => (
-            <BettingOption
-              key={option}
-              index={index}
-              option={option}
-              phase={bettingPhase}
-              inputValues={inputValues}
-              handleInputChange={handleInputChange}
-              handleBet={handleBet}
-              correctOptionPosition={correctOptionPosition}
-            />
-          ))}
-        </div>
-      )}
+      <AdminControls
+        onStartNextPhase={startNextPhase}
+        bettingPhase={bettingPhase}
+        isAdmin={isAdmin}
+        currentPhase={bettingPhase}
+        timeLeft={timeLeft}
+      />
+
+      <div className="betting-options">
+        {bettingOptions.map((option, index) => (
+          <BettingOption
+            key={option}
+            option={option}
+            value={inputValues[option] || ''}
+            onChange={(value) => handleInputChange(option, value)}
+            onBet={() => handleBet(option)}
+            disabled={!bettingOpen}
+            phase={bettingPhase}
+          />
+        ))}
+      </div>
 
       <BetHistory history={bettingHistory} />
     </div>

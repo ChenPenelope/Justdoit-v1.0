@@ -1,0 +1,76 @@
+.betting-option {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  border: 1px solid #dee2e6;
+}
+
+.option-header {
+  margin-bottom: 15px;
+}
+
+.option-header h3 {
+  color: #2c3e50;
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.option-text {
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.betting-input {
+  display: flex;
+  gap: 10px;
+}
+
+.betting-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 1em;
+}
+
+.betting-input input:disabled {
+  background-color: #e9ecef;
+  cursor: not-allowed;
+}
+
+.bet-button {
+  padding: 8px 20px;
+  background-color: #6f42c1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.bet-button:hover {
+  background-color: #5a32a3;
+}
+
+.bet-button:disabled {
+  background-color: #a8a8a8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .betting-input {
+    flex-direction: column;
+  }
+  
+  .bet-button {
+    width: 100%;
+  }
+} 

@@ -5,7 +5,7 @@ const path = require("path");
 const sequelize = require("./db");
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 8081;
 
 // CORS configuration
 const corsOptions = {

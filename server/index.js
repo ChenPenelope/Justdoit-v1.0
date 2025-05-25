@@ -7,7 +7,7 @@ const app = require('./app');
 const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
-const port = 3001;
+const port = 8081;
 
 // 安全性標頭配置
 app.use((req, res, next) => {

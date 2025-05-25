@@ -1,30 +1,22 @@
-# Use official Node.js image
-FROM node:18
+FROM node:18-alpine
 
-# Set the working directory
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY server/package*.json ./
+# 複製 package.json 和 package-lock.json
+COPY package*.json ./
+
+# 安裝依賴
 RUN npm install
 
-# Copy backend code
-COPY server/ .
+# 複製其餘文件
+COPY . .
 
-# Install dependencies again to ensure all files are properly linked
-RUN npm install
+# 設置環境變量
+ENV NODE_ENV=production
+ENV PORT=8081
 
-# Copy frontend code and build it
-COPY client/ ./client/
-WORKDIR /app/client
-RUN npm install
-RUN npm run build
+# 暴露端口
+EXPOSE 8081
 
-# Return to server directory
-WORKDIR /app
-
-# Expose the backend port
-EXPOSE 3001
-
-# Start the server
-CMD ["node", "index.js"]
+# 啟動命令
+CMD ["npm", "start"] 
