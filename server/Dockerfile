@@ -11,6 +11,7 @@ ENV HUSKY=0
 ENV NODE_ENV=production
 RUN npm install --legacy-peer-deps --no-optional
 RUN npm install -g vite
+RUN npm install @vitejs/plugin-react --save-dev
 RUN npm run build
 
 # 安裝後端依賴
