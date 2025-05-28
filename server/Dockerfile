@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -18,5 +18,5 @@ ENV PORT=8081
 # 暴露端口
 EXPOSE 8081
 
-# 啟動命令
+# 啟動應用
 CMD ["npm", "start"] 
