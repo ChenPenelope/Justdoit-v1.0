@@ -9,10 +9,16 @@ COPY . .
 WORKDIR /app/client
 ENV HUSKY=0
 ENV NODE_ENV=production
+
+# 清理現有的 node_modules
+RUN rm -rf node_modules package-lock.json
+
+# 安裝依賴
 RUN npm install --legacy-peer-deps
-RUN npm install @vitejs/plugin-react@4.2.1 --save-dev --legacy-peer-deps
-RUN npm install vite@5.1.4 --save-dev --legacy-peer-deps
-RUN npx vite build
+RUN npm install @vitejs/plugin-react@4.2.1 vite@5.1.4 --save-dev --legacy-peer-deps --force
+
+# 構建
+RUN npm run build
 
 # 安裝後端依賴
 WORKDIR /app/server
