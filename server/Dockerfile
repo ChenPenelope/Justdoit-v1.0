@@ -10,7 +10,7 @@ WORKDIR /app/client
 ENV HUSKY=0
 ENV NODE_ENV=production
 RUN npm install --legacy-peer-deps
-RUN npm run build
+RUN npx vite build
 
 # 安裝後端依賴
 WORKDIR /app/server
