@@ -18,7 +18,7 @@ RUN npm install --legacy-peer-deps
 RUN npm install @vitejs/plugin-react@4.2.1 vite@5.1.4 --save-dev --legacy-peer-deps --force
 
 # 構建
-RUN npm run build
+RUN npx vite build
 
 # 安裝後端依賴
 WORKDIR /app/server
