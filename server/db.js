@@ -29,12 +29,12 @@ if (process.env.DATABASE_URL) {
     // 本地開發環境
     sequelize = new Sequelize(
         process.env.DB_NAME || 'justdoit',
-        process.env.DB_USER || 'root',
-        process.env.DB_PASSWORD || '',
+        process.env.DB_USER || 'justdoit',
+        process.env.DB_PASSWORD || 'justdoit',
         {
             host: process.env.DB_HOST || 'localhost',
-            port: process.env.DB_PORT || 3306,
-            dialect: 'mysql',
+            port: process.env.DB_PORT || 5432,
+            dialect: 'postgres',
             logging: false,
             pool: {
                 max: 5,
