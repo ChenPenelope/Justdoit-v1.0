@@ -14,7 +14,7 @@ if (process.env.DATABASE_URL) {
                 rejectUnauthorized: false
             }
         },
-        logging: false,
+        logging: console.log, // 啟用日誌以便調試
         pool: {
             max: 5,
             min: 0,
@@ -22,7 +22,8 @@ if (process.env.DATABASE_URL) {
             idle: 10000
         },
         retry: {
-            max: 3
+            max: 5,
+            match: [/Deadlock/i, /Connection refused/i, /Connection timed out/i]
         }
     });
 } else {
@@ -35,7 +36,7 @@ if (process.env.DATABASE_URL) {
             host: process.env.DB_HOST || 'localhost',
             port: process.env.DB_PORT || 5432,
             dialect: 'postgres',
-            logging: false,
+            logging: console.log, // 啟用日誌以便調試
             pool: {
                 max: 5,
                 min: 0,
