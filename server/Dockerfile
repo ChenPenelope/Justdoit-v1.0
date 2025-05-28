@@ -16,14 +16,14 @@ RUN rm -rf node_modules package-lock.json
 RUN /usr/local/bin/npm install -g vite@5.1.4
 
 # 安裝依賴
-RUN /usr/local/bin/npm install --force
+RUN /usr/local/bin/npm install --production=false
 
 # 構建
 RUN /usr/local/bin/vite build
 
 # 安裝後端依賴
 WORKDIR /app/server
-RUN /usr/local/bin/npm install --force
+RUN /usr/local/bin/npm install --production=false
 
 # 設置環境變量
 ENV NODE_ENV=production
