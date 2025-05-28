@@ -48,7 +48,7 @@ const startServer = async () => {
         // 等待數據庫初始化完成
         await sequelize.authenticate();
         
-        app.listen(port, () => {
+        app.listen(port, '0.0.0.0', () => {
             console.log(`服務器運行在端口 ${port}`);
         });
     } catch (error) {
