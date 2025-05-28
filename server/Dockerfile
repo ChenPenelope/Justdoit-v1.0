@@ -2,14 +2,17 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# 複製 package.json 和 package-lock.json
-COPY package*.json ./
-
-# 安裝依賴
-RUN npm install
-
-# 複製其餘文件
+# 複製所有文件
 COPY . .
+
+# 安裝前端依賴並構建
+WORKDIR /app/client
+RUN npm install
+RUN npm run build
+
+# 安裝後端依賴
+WORKDIR /app/server
+RUN npm install
 
 # 設置環境變量
 ENV NODE_ENV=production
@@ -19,4 +22,4 @@ ENV PORT=8081
 EXPOSE 8081
 
 # 啟動應用
-CMD ["npm", "start"] 
+CMD ["node", "app.js"] 
