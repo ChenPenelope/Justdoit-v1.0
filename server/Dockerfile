@@ -7,7 +7,8 @@ COPY . .
 
 # 安裝前端依賴並構建
 WORKDIR /app/client
-RUN npm install
+ENV HUSKY=0
+RUN npm install --ignore-scripts
 RUN npm run build
 
 # 安裝後端依賴
