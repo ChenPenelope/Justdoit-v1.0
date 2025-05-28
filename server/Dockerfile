@@ -14,16 +14,16 @@ ENV NODE_ENV=production
 RUN rm -rf node_modules package-lock.json
 
 # 安裝依賴
-RUN npm install --legacy-peer-deps
-RUN npm install vite@5.1.4 --save-dev --legacy-peer-deps
-RUN npm install @vitejs/plugin-react@4.2.1 --save-dev --legacy-peer-deps
+RUN /usr/local/bin/npm install --legacy-peer-deps
+RUN /usr/local/bin/npm install vite@5.1.4 --save-dev --legacy-peer-deps
+RUN /usr/local/bin/npm install @vitejs/plugin-react@4.2.1 --save-dev --legacy-peer-deps
 
 # 構建
-RUN npm run build
+RUN /usr/local/bin/npm run build
 
 # 安裝後端依賴
 WORKDIR /app/server
-RUN npm install --legacy-peer-deps
+RUN /usr/local/bin/npm install --legacy-peer-deps
 
 # 設置環境變量
 ENV NODE_ENV=production
