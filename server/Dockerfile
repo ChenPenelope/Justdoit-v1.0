@@ -10,6 +10,8 @@ WORKDIR /app/client
 ENV HUSKY=0
 ENV NODE_ENV=production
 RUN npm install --legacy-peer-deps
+RUN npm install @vitejs/plugin-react@4.2.1 --save-dev --legacy-peer-deps
+RUN npm install vite@5.1.4 --save-dev --legacy-peer-deps
 RUN npx vite build
 
 # 安裝後端依賴
