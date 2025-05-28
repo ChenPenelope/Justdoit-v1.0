@@ -7,7 +7,6 @@ COPY . .
 
 # 安裝前端依賴並構建
 WORKDIR /app/client
-ENV HUSKY=0
 ENV NODE_ENV=production
 
 # 清理現有的 node_modules

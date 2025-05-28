@@ -11,14 +11,8 @@
     "lint": "eslint --fix --ext=js,jsx src/",
     "format:check": "prettier . --check --ignore-unknown",
     "format": "prettier . --write --ignore-unknown",
-    "prepare": "cd .. && npx husky client/.husky",
     "deploy": "vite build && gh-pages -d dist",
     "copy:dist": "cp -r ./dist ../server"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,scss,md}": [
@@ -49,7 +43,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "globals": "^13.24.0",
-    "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
