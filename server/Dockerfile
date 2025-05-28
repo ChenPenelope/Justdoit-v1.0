@@ -8,12 +8,13 @@ COPY . .
 # 安裝前端依賴並構建
 WORKDIR /app/client
 ENV HUSKY=0
-RUN npm install --ignore-scripts
+ENV NODE_ENV=production
+RUN npm install --legacy-peer-deps --no-optional
 RUN npm run build
 
 # 安裝後端依賴
 WORKDIR /app/server
-RUN npm install
+RUN npm install --legacy-peer-deps --no-optional
 
 # 設置環境變量
 ENV NODE_ENV=production
