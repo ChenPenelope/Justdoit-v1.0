@@ -11,7 +11,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: justdoit-db
-          property: connectionString
+          property: internalConnectionString
     autoDeploy: true
     branch: main
     healthCheckPath: /api
