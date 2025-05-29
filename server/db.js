@@ -12,18 +12,21 @@ if (process.env.DATABASE_URL) {
             ssl: {
                 require: true,
                 rejectUnauthorized: false
-            }
+            },
+            connectTimeout: 60000, // 增加連接超時時間
+            keepAlive: true, // 保持連接
+            keepAliveInitialDelayMillis: 10000 // 保持連接的初始延遲
         },
         logging: console.log, // 啟用日誌以便調試
         pool: {
-            max: 5,
+            max: 10, // 增加連接池大小
             min: 0,
-            acquire: 30000,
+            acquire: 60000, // 增加獲取連接的超時時間
             idle: 10000
         },
         retry: {
-            max: 5,
-            match: [/Deadlock/i, /Connection refused/i, /Connection timed out/i]
+            max: 10, // 增加重試次數
+            match: [/Deadlock/i, /Connection refused/i, /Connection timed out/i, /ECONNREFUSED/i]
         }
     });
 } else {
@@ -36,7 +39,7 @@ if (process.env.DATABASE_URL) {
             host: process.env.DB_HOST || 'localhost',
             port: process.env.DB_PORT || 5432,
             dialect: 'postgres',
-            logging: console.log, // 啟用日誌以便調試
+            logging: console.log,
             pool: {
                 max: 5,
                 min: 0,
@@ -48,9 +51,12 @@ if (process.env.DATABASE_URL) {
 }
 
 // 初始化數據庫
-const initDatabase = async (retries = 5, delay = 5000) => {
+const initDatabase = async (retries = 10, delay = 10000) => { // 增加重試次數和延遲時間
     for (let i = 0; i < retries; i++) {
         try {
+            console.log(`嘗試連接數據庫 (${i + 1}/${retries})...`);
+            console.log('數據庫 URL:', process.env.DATABASE_URL ? '已設置' : '未設置');
+            
             // 測試連接
             await sequelize.authenticate();
             console.log('數據庫連接成功。');
@@ -75,6 +81,8 @@ const initDatabase = async (retries = 5, delay = 5000) => {
             return models;
         } catch (error) {
             console.error(`數據庫初始化嘗試 ${i + 1}/${retries} 失敗:`, error.message);
+            console.error('詳細錯誤:', error);
+            
             if (i < retries - 1) {
                 console.log(`等待 ${delay/1000} 秒後重試...`);
                 await new Promise(resolve => setTimeout(resolve, delay));

@@ -12,6 +12,26 @@ services:
         fromDatabase:
           name: justdoit-db
           property: internalConnectionString
+      - key: DB_HOST
+        fromDatabase:
+          name: justdoit-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: justdoit-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: justdoit-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: justdoit-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: justdoit-db
+          property: password
     autoDeploy: true
     branch: main
     healthCheckPath: /api
