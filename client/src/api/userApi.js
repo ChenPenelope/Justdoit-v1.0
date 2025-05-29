@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 // Create a new user
 export const createUser = async (name) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/users`, { name });
+    const response = await axios.post('/users', { name });
     console.log('create user', response.data.user);
     return response.data.user;
   } catch (error) {
@@ -16,7 +14,7 @@ export const createUser = async (name) => {
 // Get all users
 export const getAllUsers = async () => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/users`);
+    const response = await axios.get('/users');
     return response.data;
   } catch (error) {
     console.log(error.response);
@@ -27,7 +25,7 @@ export const getAllUsers = async () => {
 // Get a user by name
 export const getUserByName = async (name) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/users/name/${name}`);
+    const response = await axios.get(`/users/name/${name}`);
     return response.data.user;
   } catch (error) {
     throw error.response.data;
@@ -37,7 +35,7 @@ export const getUserByName = async (name) => {
 // Update chips of a user
 export const updateUserChips = async (id, chips) => {
   try {
-    const response = await axios.put(`${API_BASE_URL}/users/${id}/chips`, { chips });
+    const response = await axios.put(`/users/${id}/chips`, { chips });
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -47,7 +45,7 @@ export const updateUserChips = async (id, chips) => {
 // Delete a user
 export const deleteUser = async (id) => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/users/${id}`);
+    const response = await axios.delete(`/users/${id}`);
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -57,7 +55,7 @@ export const deleteUser = async (id) => {
 // Delete all users
 export const deleteAllUsers = async () => {
   try {
-    const response = await axios.delete(`${API_BASE_URL}/users`);
+    const response = await axios.delete('/users');
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -67,7 +65,7 @@ export const deleteAllUsers = async () => {
 // Check admin password
 export const checkAdminPassword = async (password) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/users/admin`, { password });
+    const response = await axios.post('/users/admin', { password });
     return response.data;
   } catch (error) {
     throw error.response.data;
