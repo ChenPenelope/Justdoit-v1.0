@@ -35,8 +35,8 @@ app.get('/api', (req, res) => {
   res.json({ message: "Hello from server!" });
 });
 
-// API 路由
-app.use('/api/users', userRoutes);
+// API 路由 - 移除 /api 前綴
+app.use('/users', userRoutes);
 
 // 靜態文件服務 - 修改路徑
 app.use(express.static(path.join(__dirname, '../client/dist')));
