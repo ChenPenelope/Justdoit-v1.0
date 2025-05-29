@@ -10,27 +10,13 @@ if (process.env.DATABASE_URL) {
     // 使用 Render 提供的數據庫 URL
     sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgres',
-        protocol: 'postgres',
         dialectOptions: {
             ssl: {
                 require: true,
                 rejectUnauthorized: false
-            },
-            connectTimeout: 60000,
-            keepAlive: true,
-            keepAliveInitialDelayMillis: 10000
+            }
         },
-        logging: (msg) => console.log('Sequelize:', msg),
-        pool: {
-            max: 10,
-            min: 0,
-            acquire: 60000,
-            idle: 10000
-        },
-        retry: {
-            max: 10,
-            match: [/Deadlock/i, /Connection refused/i, /Connection timed out/i, /ECONNREFUSED/i]
-        }
+        logging: (msg) => console.log('Sequelize:', msg)
     });
 } else {
     console.log('使用單獨的數據庫配置連接');
@@ -50,13 +36,7 @@ if (process.env.DATABASE_URL) {
             host: process.env.DB_HOST || 'localhost',
             port: process.env.DB_PORT || 5432,
             dialect: 'postgres',
-            logging: (msg) => console.log('Sequelize:', msg),
-            pool: {
-                max: 5,
-                min: 0,
-                acquire: 30000,
-                idle: 10000
-            }
+            logging: (msg) => console.log('Sequelize:', msg)
         }
     );
 }
