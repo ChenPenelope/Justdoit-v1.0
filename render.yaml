@@ -51,4 +51,5 @@ databases:
     databaseName: justdoit
     user: justdoit
     plan: free
-    region: singapore 
+    region: singapore
+    ipAllowList: []  # 允許所有 IP 訪問 

@@ -4,6 +4,9 @@ const { Sequelize } = require("sequelize");
 let sequelize;
 
 if (process.env.DATABASE_URL) {
+    console.log('使用 DATABASE_URL 連接數據庫');
+    console.log('數據庫連接字符串:', process.env.DATABASE_URL.replace(/:[^:@]*@/, ':****@')); // 隱藏密碼
+    
     // 使用 Render 提供的數據庫 URL
     sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgres',
@@ -13,23 +16,31 @@ if (process.env.DATABASE_URL) {
                 require: true,
                 rejectUnauthorized: false
             },
-            connectTimeout: 60000, // 增加連接超時時間
-            keepAlive: true, // 保持連接
-            keepAliveInitialDelayMillis: 10000 // 保持連接的初始延遲
+            connectTimeout: 60000,
+            keepAlive: true,
+            keepAliveInitialDelayMillis: 10000
         },
-        logging: console.log, // 啟用日誌以便調試
+        logging: (msg) => console.log('Sequelize:', msg),
         pool: {
-            max: 10, // 增加連接池大小
+            max: 10,
             min: 0,
-            acquire: 60000, // 增加獲取連接的超時時間
+            acquire: 60000,
             idle: 10000
         },
         retry: {
-            max: 10, // 增加重試次數
+            max: 10,
             match: [/Deadlock/i, /Connection refused/i, /Connection timed out/i, /ECONNREFUSED/i]
         }
     });
 } else {
+    console.log('使用單獨的數據庫配置連接');
+    console.log('數據庫配置:', {
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 5432,
+        database: process.env.DB_NAME || 'justdoit',
+        user: process.env.DB_USER || 'justdoit'
+    });
+    
     // 本地開發環境
     sequelize = new Sequelize(
         process.env.DB_NAME || 'justdoit',
@@ -39,7 +50,7 @@ if (process.env.DATABASE_URL) {
             host: process.env.DB_HOST || 'localhost',
             port: process.env.DB_PORT || 5432,
             dialect: 'postgres',
-            logging: console.log,
+            logging: (msg) => console.log('Sequelize:', msg),
             pool: {
                 max: 5,
                 min: 0,
@@ -51,11 +62,18 @@ if (process.env.DATABASE_URL) {
 }
 
 // 初始化數據庫
-const initDatabase = async (retries = 10, delay = 10000) => { // 增加重試次數和延遲時間
+const initDatabase = async (retries = 10, delay = 10000) => {
     for (let i = 0; i < retries; i++) {
         try {
             console.log(`嘗試連接數據庫 (${i + 1}/${retries})...`);
-            console.log('數據庫 URL:', process.env.DATABASE_URL ? '已設置' : '未設置');
+            console.log('環境變量:', {
+                NODE_ENV: process.env.NODE_ENV,
+                DATABASE_URL: process.env.DATABASE_URL ? '已設置' : '未設置',
+                DB_HOST: process.env.DB_HOST,
+                DB_PORT: process.env.DB_PORT,
+                DB_NAME: process.env.DB_NAME,
+                DB_USER: process.env.DB_USER
+            });
             
             // 測試連接
             await sequelize.authenticate();
@@ -73,7 +91,7 @@ const initDatabase = async (retries = 10, delay = 10000) => { // 增加重試次
             if (adminCount === 0) {
                 await models.Admin.create({
                     username: 'admin',
-                    password: 'admin123' // 請在生產環境中更改此密碼
+                    password: 'admin123'
                 });
                 console.log('初始管理員創建完成。');
             }
@@ -82,6 +100,7 @@ const initDatabase = async (retries = 10, delay = 10000) => { // 增加重試次
         } catch (error) {
             console.error(`數據庫初始化嘗試 ${i + 1}/${retries} 失敗:`, error.message);
             console.error('詳細錯誤:', error);
+            console.error('錯誤堆棧:', error.stack);
             
             if (i < retries - 1) {
                 console.log(`等待 ${delay/1000} 秒後重試...`);
